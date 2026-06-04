@@ -1,0 +1,33 @@
+name: CI
+
+# CI de validacao do MVP read-only. Sem deploy, secrets, login nem conexao
+# com OpenClaw: apenas checa auditoria de dependencias, tipos e build.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit (falha em vulnerabilidades moderadas+)
+        run: npm audit --audit-level=moderate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
