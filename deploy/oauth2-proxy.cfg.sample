@@ -1,0 +1,36 @@
+# oauth2-proxy (sample) — painel agentes youAmaze
+# Copie para /etc/oauth2-proxy/oauth2-proxy.cfg e PREENCHA os segredos.
+# ATENCAO: o arquivo real (com valores) NUNCA deve ser versionado.
+#   - client_id / client_secret: criados no Google Cloud (OAuth 2.0 Client ID,
+#     tipo "Web application").
+#   - cookie_secret: 32 bytes aleatorios. Gere com:
+#       python3 -c 'import os,base64;print(base64.urlsafe_b64encode(os.urandom(32)).decode())'
+
+provider      = "google"
+client_id     = "REPLACE_ME"          # NAO versionar valor real
+client_secret = "REPLACE_ME"          # NAO versionar valor real
+cookie_secret = "REPLACE_ME"          # NAO versionar valor real (32 bytes)
+
+# Quem pode entrar. Use o dominio corporativo OU uma allowlist explicita de
+# e-mails (mais restritivo). Descomente apenas uma estrategia.
+email_domains = ["youamaze.com"]
+# authenticated_emails_file = "/etc/oauth2-proxy/authorized_emails.txt"
+
+# oauth2-proxy escuta SO em loopback; quem o expoe e o Caddy (TLS na 443).
+http_address = "127.0.0.1:4180"
+reverse_proxy = true                  # esta atras do Caddy (confia em X-Forwarded-*)
+redirect_url  = "https://painel.youamaze.app/oauth2/callback"
+
+# Upstream = o app Express (read-only), tambem so em loopback.
+upstreams = ["http://127.0.0.1:3000"]
+
+# Injeta X-Auth-Request-Email/User para o app (defesa em profundidade no app).
+set_xauthrequest = true
+# Nao repassar tokens/credenciais para o upstream: o app so precisa do e-mail.
+pass_access_token        = false
+pass_authorization_header = false
+
+# Endurecimento de cookie.
+cookie_secure   = true
+cookie_httponly = true
+cookie_samesite = "lax"

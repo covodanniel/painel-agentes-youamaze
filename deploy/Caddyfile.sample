@@ -1,0 +1,24 @@
+# Caddyfile (sample) — painel agentes youAmaze
+# Copie para o Caddy do host (ex.: /etc/caddy/Caddyfile) e ajuste o dominio.
+#
+# Caddy termina TLS (Let's Encrypt automatico) na porta 443 e repassa para o
+# oauth2-proxy, que faz o login Google e injeta X-Auth-Request-Email antes de
+# alcancar o app. O app (127.0.0.1:3000) e o oauth2-proxy (127.0.0.1:4180)
+# NUNCA sao expostos direto: so a 443 do Caddy fica aberta no firewall.
+
+painel.youamaze.app {
+	encode zstd gzip
+
+	# Todo o trafego passa pelo oauth2-proxy (auth Google). Ele, por sua vez,
+	# tem o app como upstream (ver deploy/oauth2-proxy.cfg.sample).
+	reverse_proxy 127.0.0.1:4180
+
+	# Cabecalhos de seguranca basicos (defesa em profundidade).
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+}

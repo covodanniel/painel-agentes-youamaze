@@ -52,15 +52,43 @@ Se mudar a porta da API, atualize também o `proxy` em `vite.config.ts`.
 ## Build / produção (preview do deploy)
 
 ```bash
-npm run build   # gera dist/ (frontend estático)
-npm start       # Express serve a API + dist/ no mesmo processo (porta 3000)
+npm run build:all   # gera dist/ (frontend) e dist-server/index.js (servidor compilado)
+npm start           # node dist-server/index.js — serve API + dist/ no mesmo processo
 ```
 
-Em produção é um único processo: o Express serve o frontend estático e a API na
-mesma origem — ideal para ficar atrás de um reverse proxy em `painel.youamaze.app`.
+Em produção é um único processo Node: o servidor é **compilado** com esbuild para
+`dist-server/index.js` (sem `tsx`/dev-deps em runtime) e serve o frontend estático
+e a API na mesma origem. Por padrão o app faz bind em **`127.0.0.1`** — ele
+**não** deve ser exposto direto na rede; o acesso público passa por um reverse
+proxy com autenticação (ver abaixo).
 
-Outros scripts: `npm run typecheck` (checagem TypeScript), `npm run preview`
-(preview do build do Vite).
+Outros scripts: `npm run build` (só frontend), `npm run build:server` (só
+servidor), `npm run typecheck`, `npm run preview`.
+
+## Deploy seguro (auth + reverse proxy)
+
+Topologia: `Internet → [TLS] Caddy → oauth2-proxy (Google) → app (127.0.0.1:3000)`.
+Sem login o painel fica bloqueado; com login autorizado, abre. Passo a passo,
+comandos de validação e rollback estão em **[`docs/deploy-seguro.md`](docs/deploy-seguro.md)**;
+os samples de configuração (sem segredos) em **`deploy/`**.
+
+> Esta fase **não** conecta o OpenClaw real nem troca os mocks — só estabelece o
+> acesso seguro. Segredos do login (`client_id`, `client_secret`, `cookie_secret`)
+> vivem no oauth2-proxy e **nunca** são versionados.
+
+### Variáveis de ambiente do app (sem valores — nenhuma é segredo)
+
+| Variável             | Função                                                              |
+| -------------------- | ------------------------------------------------------------------ |
+| `PORT`               | Porta do servidor (padrão `3000`).                                 |
+| `HOST`               | Host de bind (padrão `127.0.0.1`; público só via proxy).           |
+| `NODE_ENV`           | `production` no deploy.                                             |
+| `TRUST_PROXY`        | Confiança em proxy do Express (padrão `loopback`).                 |
+| `REQUIRE_PROXY_AUTH` | `true` exige o header de identidade do proxy (401 sem ele).        |
+| `AUTH_HEADER`        | Header de identidade injetado pelo proxy (padrão `x-auth-request-email`). |
+
+Veja `.env.example` e `deploy/painel.env.sample`. Os segredos do login ficam no
+oauth2-proxy (`deploy/oauth2-proxy.cfg.sample`), fora do versionamento.
 
 ## Telas
 
