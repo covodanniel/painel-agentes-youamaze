@@ -13,7 +13,7 @@ export function getSessions(): SessionActivity[] {
       sessionKey: 'chaves/coordenacao-2026w23',
       type: 'coordenação',
       updatedAt: minutesAgo(6),
-      model: 'claude-opus',
+      model: 'gpt-5.5',
     },
     {
       id: 's2',
@@ -21,7 +21,7 @@ export function getSessions(): SessionActivity[] {
       sessionKey: 'kiko/ofertas-rascunho',
       type: 'copy / conteúdo',
       updatedAt: minutesAgo(22),
-      model: 'claude-sonnet',
+      model: 'gpt-5.5',
     },
     {
       id: 's3',
@@ -29,7 +29,7 @@ export function getSessions(): SessionActivity[] {
       sessionKey: 'chiquinha/deploy-check',
       type: 'técnico / deploy',
       updatedAt: minutesAgo(48),
-      model: 'claude-sonnet',
+      model: 'gpt-5.5',
     },
     {
       id: 's4',
@@ -37,7 +37,7 @@ export function getSessions(): SessionActivity[] {
       sessionKey: 'madruga/qa-gate-funil',
       type: 'qa / gate',
       updatedAt: minutesAgo(180),
-      model: 'claude-sonnet',
+      model: 'gpt-5.5',
     },
     {
       id: 's5',

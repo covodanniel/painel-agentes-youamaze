@@ -20,7 +20,7 @@ export function getHealth(): HealthStatus {
     ],
     cron: {
       name: 'smoke_semanal_agentes_youamaze',
-      schedule: 'Semanal — segunda-feira 09:00 (America/Sao_Paulo)',
+      schedule: 'Semanal — segunda-feira 08:00 (America/Sao_Paulo)',
       active: true,
     },
     lastSmoke: {
