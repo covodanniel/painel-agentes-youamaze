@@ -29,5 +29,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Build
+      - name: Build (frontend)
         run: npm run build
+
+      - name: Build (server bundle)
+        run: npm run build:server

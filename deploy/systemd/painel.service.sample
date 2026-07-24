@@ -1,0 +1,27 @@
+# systemd unit (sample) — app Express do painel (read-only).
+# Instale em /etc/systemd/system/painel.service, ajuste caminhos/usuario e:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now painel
+# Pre-requisito: `npm ci --omit=dev && npm run build:all` no WorkingDirectory.
+
+[Unit]
+Description=Painel agentes youAmaze (Express, read-only)
+After=network.target
+
+[Service]
+Type=simple
+User=painel
+Group=painel
+WorkingDirectory=/opt/painel-agentes-youamaze
+EnvironmentFile=/opt/painel-agentes-youamaze/deploy/painel.env
+ExecStart=/usr/bin/node dist-server/index.js
+Restart=always
+RestartSec=3
+
+# Endurecimento (o app so le arquivos e escuta em 127.0.0.1).
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

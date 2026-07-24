@@ -1,6 +1,12 @@
 node_modules/
 dist/
+dist-server/
 *.log
 .env
 .env.local
 .DS_Store
+
+# Deploy: NUNCA versionar valores reais (segredos/ambiente). Os *.sample sim.
+deploy/painel.env
+deploy/oauth2-proxy.cfg
+deploy/secrets/
